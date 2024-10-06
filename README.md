@@ -52,8 +52,7 @@ The final transformed data table was loaded to PowerBI for visualization purpose
 1. General overview of the countries , markets and items in tablular format like country and number of items and markets, country and markets, country and items. The country, market and items can be choosen using a slicer.
 2. Candle stick charts for High-low comparison and inflation-trust comparisons, the charts will give comparsion for a sigle country, market and item at a time.
 3. Multiple countries, markets and items comparison based on open, close, high, low, inflation and trust. For these visualizations, a custom filter was created using the average values for the open , close, high, low, inflation and trust parameters.
-<br>
-PowerBI report: https://app.powerbi.com/groups/me/reports/f3c221ce-5f2a-4180-94e1-18edb24a50a8/ReportSection934bf910580b46b07066?experience=power-bi
+
 
 
 
