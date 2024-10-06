@@ -1,0 +1,64 @@
+create database FOOD_DB;
+create schema FOOD_SCHEMA;
+
+CREATE OR REPLACE FILE FORMAT FOOD_SCHEMA.csv_format
+TYPE = 'CSV'
+FIELD_DELIMITER=','
+FIELD_OPTIONALLY_ENCLOSED_BY = '"';
+
+CREATE or replace STORAGE INTEGRATION S3_INTEGRATION
+  TYPE = EXTERNAL_STAGE
+  STORAGE_PROVIDER = S3
+  STORAGE_AWS_ROLE_ARN = 'arn:aws:iam::515678466614:role/snowflake_s3_access_role'
+  ENABLED = TRUE
+  STORAGE_ALLOWED_LOCATIONS = ('s3://food-streaming-transformed-data-bucket/data/');
+
+DESC INTEGRATION S3_INTEGRATION;
+
+CREATE OR REPLACE STAGE RAW_STAGE
+  URL='s3://food-streaming-transformed-data-bucket/data/'
+  STORAGE_INTEGRATION = S3_INTEGRATION
+  FILE_FORMAT=csv_format;
+
+list @RAW_STAGE;
+
+CREATE OR REPLACE PIPE RAW_DATA_PIPE
+AUTO_INGEST = TRUE
+AS
+COPY INTO RAW_FOOD_DATA
+FROM @RAW_STAGE
+FILE_FORMAT = (FORMAT_NAME = csv_format);
+
+DESC PIPE RAW_DATA_PIPE;
+
+select COUNT(*) from RAW_FOOD_DATA;
+
+truncate RAW_FOOD_DATA;
+
+create or replace table row_count (
+  index_no number autoincrement start 1 increment 1,
+  no_of_rows bigint,
+  date varchar(100),
+  no_of_rows_added bigint,
+  no_of_rows_in_transformed_table bigint
+  );
+
+
+create or replace task cloneschema 
+  warehouse = COMPUTE_WH 
+  schedule = 'USING CRON 0 12 * * * UTC' --schedule daily at 12 PM UTC 
+as 
+  call DATA_TRANSFORMATION();
+
+show tasks;
+
+alter task cloneschema resume;
+
+select * from TRANSFORMED_FOOD_DATA;
+
+
+CREATE OR REPLACE WAREHOUSE snowpark_opt_wh WITH
+  WAREHOUSE_SIZE = 'MEDIUM'
+  WAREHOUSE_TYPE = 'SNOWPARK-OPTIMIZED';
+
+ALTER WAREHOUSE snowpark_opt_wh SUSPEND;
