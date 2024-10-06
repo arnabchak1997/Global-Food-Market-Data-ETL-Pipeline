@@ -13,7 +13,7 @@ detailed information on various aspects such as country specifics, market detail
 <br>
 
 ## Tech Stack: <br>
-Programming : Python (pandas), SQL <br>
+Programming Languages: Python (pandas), SQL <br>
 AWS Services : AWS Kinesis, AWS App Runner, AWS Kinesis Firehose, AWS S3, AWS LAMBDA <br>
 Warehouse: Snowflake <br>
 Visualization : Power BI <br>
